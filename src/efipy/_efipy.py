@@ -1,18 +1,25 @@
 from pathlib import Path
 import os.path
 import sys
-from safer_prompt_toolkit import prompt, validation, completion
+from safer_prompt_toolkit import prompt
+from prompt_toolkit import validation, completion
 
 
-def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folders=False, b_inquire_output=False):
+def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folders=False):
+    """
+    :param func: a callable that receives
+    :param root_path:
+    :param b_recursive:
+    :param files_filter:
+    :param b_yield_folders:
+    :return:
+    """
     if root_path is None:
         root_path = prompt(
             "enter path:\n",
             validator=validation.Validator.from_callable(path_validator, error_message="invalid path"),
             completer=completion.PathCompleter()
         )
-    if b_inquire_output:
-        inquire_output_path(default=os.path.join(root_path, "output"))
 
     root_path = Path(root_path)
     if root_path.is_dir():
@@ -29,6 +36,7 @@ def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folde
     for path in paths:
         if b_yield_folders or not path.is_dir():
             func(path)
+
     return paths
 
 
