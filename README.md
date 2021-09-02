@@ -11,8 +11,11 @@ also after making several projects that needed a file iterator with a nice UI, a
 pip install efipy
 ```
 
-## requires
-- safer-prompt-toolkit
+## requirments  
+(pypi should download all of these automatically upon install)
+- [prompt-toolkit](https://pypi.org/project/safer-prompt-toolkit/)
+- [safer-prompt-toolkit](https://pypi.org/project/safer-prompt-toolkit/) - (optional)
+- [tqdm](https://pypi.org/project/tqdm/) - (optional)
 
 ## documentation
 #### run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folders=False)
@@ -97,3 +100,6 @@ efipy.run(func,root_path="some_root_folder",b_recursive=True,files_filter="*.q")
 #  some_root_folder/dir2/f3.q
 #  some_root_folder/dir2/f4.q
 ```
+
+## tip for easy usage
+if you open ipython, you can easily get the docstring for any function by writing '?' after it, for example writing `efipy.run?` will supply the docstring of efipy.run  

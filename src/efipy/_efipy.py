@@ -1,19 +1,28 @@
 from pathlib import Path
 import os.path
 import sys
-from safer_prompt_toolkit import prompt
+
+try:
+    from safer_prompt_toolkit import prompt
+except ImportError:
+    from prompt_toolkit import prompt
+
 from prompt_toolkit import validation, completion
 
 
-def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folders=False):
+def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folders=False, b_progress_bar = True):
     """
-    :param func: a callable that receives
-    :param root_path:
-    :param b_recursive:
-    :param files_filter:
-    :param b_yield_folders:
-    :return:
+    :param func: func - a callable, the function to be executed for each matching file in directories.
+                 func receives a single parameter of type pathlib.Path and returns nothing.
+    :param root_path: root_path - defaults to None. a directory, or a file in which to iterate. if file is given than runs only on that one file. if None is given, will prompt the user for a path, with path auto completion and validation.
+    :param b_recursive: b_recursive - defaults to False. if True, will search recursively in sub-folders. if False will limit search to current dir.
+    :param files_filter: files_filter - defaults to "*" (allows any path). a filter to limit search results for files, see "glob" for further details.
+    :param b_yield_folders: b_yield_folders - defaults to False. weather to pass paths to folders (not files) to func as well (if you want to iterate on folders as well as files)
+    :param b_progress_bar: if true uses tqdm to display progress of file iteration.
+    :return: a list of pathlib.Path instances that contains all the paths that matched the search (the exact same ones that were sent to func).
     """
+
+    # if root path not specified, prompt user for path
     if root_path is None:
         root_path = prompt(
             "enter path:\n",
@@ -21,6 +30,7 @@ def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folde
             completer=completion.PathCompleter()
         )
 
+    # find all paths to iterate on
     root_path = Path(root_path)
     if root_path.is_dir():
         if b_recursive:
@@ -33,7 +43,18 @@ def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folde
             paths = [root_path]
         else:
             paths = []
-    for path in paths:
+
+    # handle progress bar
+    paths_iter = paths
+    if b_progress_bar:
+        try:
+            from tqdm import tqdm
+            paths_iter = tqdm(paths)
+        except ImportError:
+            print("can't import tqdm, progress won't be displayed")
+
+    # call func for each path
+    for path in paths_iter:
         if b_yield_folders or not path.is_dir():
             func(path)
 
