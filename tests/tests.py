@@ -1,7 +1,10 @@
 import sys
 import os
+import pathlib
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-__package__ = "efipy.tests"
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+__package__ = ".".join(pathlib.Path(__file__).parts[-3:-1])
 
 from ..src import efipy
 
@@ -10,9 +13,13 @@ paths = []
 def func(path):
     paths.append(path)
 
-efipy.run(func,root_path="test_file_tree",b_recursive=True,files_filter="*.q")
+path_to_test_file_tree = os.path.join(os.path.relpath(os.path.dirname(__file__),os.getcwd()),"test_file_tree")
+efipy.run(func,root_path=path_to_test_file_tree,b_recursive=True,files_filter="*.q")
 
 paths_rel = [os.path.relpath(p,os.path.dirname(__file__)) for p in paths]
 paths_rel = sorted(list(map(os.path.normpath,paths_rel)))
 expected_paths = sorted(list(map(os.path.normpath,expected_paths)))
-assert paths_rel == expected_paths
+if paths_rel == expected_paths:
+    print("success")
+else:
+    raise AssertionError(f"paths_rel = {paths_rel}\nexpected_paths = {expected_paths}")

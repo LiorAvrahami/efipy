@@ -27,7 +27,8 @@ def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folde
         root_path = prompt(
             "enter path:\n",
             validator=validation.Validator.from_callable(path_validator, error_message="invalid path"),
-            completer=completion.PathCompleter()
+            completer=completion.PathCompleter(),
+            default="."
         )
 
     # find all paths to iterate on

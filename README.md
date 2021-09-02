@@ -1,10 +1,10 @@
 # efipy
-##### - efipy stands for '*easy file iterator python*'  
+**\- efipy stands for '*easy file iterator python*'**    
 python based easy file iterator, with recursive option, and file filtering. useful when you need to apply some function to a set of files.
 
 ## intent:    
-I find this module is usefull for automating day to day file iteration tasks, mosly on windows where bash language is orders of magnitude weaker than python. so instead of writing some half cooked file iterator every time I need to get something done, I thouth I would make this.
-also after making several projects that needed a file iterator with a nice UI, and after deciding that copy pasting this code is tedius and unhealthy, I desided to make this thing a project and upload it ot pypi.
+I find this module is useful for automating day to day file iteration tasks, mostly on Windows where bash language is orders of magnitude weaker than python. so instead of writing some half cooked file iterator every time I need to get something done, I thought I would make this.
+also, after making several projects that needed a file iterator with a nice UI, and after deciding that copying and pasting this code is tedious and unhealthy, I decided to make this thing a project and upload it ot pypi.
 
 ## Installation
 ```
@@ -23,16 +23,17 @@ run func on all files that match.
 Parameters:  
 >  - func - a callable, the function to be executed for each matching file in directories.  
 >    func receives a single parameter of type pathlib.Path and returns nothing.  
->  - root_path - defaults to None. a directory, or a file in which to iterate. if file is given than runs only on that one file. if None is given, will prompt the user for a path, with path auto completion and validation.  
+>  - root_path - defaults to None. a directory, or a file in which to iterate. if file is given than runs only on that one file. if None is given, will prompt the user for a path, with path auto-completion and validation.  
 >  - b_recursive - defaults to False. if True, will search recursively in sub-folders. if False will limit search to current dir.   
 >  - files_filter - defaults to "*" (allows any path). a filter to limit search results for files, see "glob" for further details. 
 >  - b_yield_folders - defaults to False. weather to pass paths to folders (not files) to func as well (if you want to iterate on folders as well as files)
+>  - b_progress_bar - if true uses tqdm to display progress of file iteration.
 
 returns:
 > - a list of pathlib.Path instances that contains all the paths that matched the search (the exact same ones that were sent to func).     
  
 info: 
-1. if you don't like the fact that func recives a complicated pathlib.Path instance, you can just write `path=str(path)` in context:
+1. if you don't like the fact that func receives a complicated pathlib.Path instance, you can just write `path=str(path)` in context:
 2. take advantage of the root_path=None option. when no root path is supplied, the computer will prompt you for a path with some nice UI.
 ```python
 def func(path):
@@ -53,8 +54,7 @@ returns:
  
 ## example usages
 example 1:  
-lets say I have a folder in wich all the files are numbered. and lets say I want to rename every
-even third file, so that it ends wit a q, for example:  
+lets say I have a folder in which all the files are numbered. let's say I want to rename every third file, so that it ends wit a q, for example:  
 ```
  before:                    -> after:  
  file_one_000.txt   
