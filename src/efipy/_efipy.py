@@ -24,12 +24,7 @@ def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folde
 
     # if root path not specified, prompt user for path
     if root_path is None:
-        root_path = prompt(
-            "enter path:\n",
-            validator=validation.Validator.from_callable(path_validator, error_message="invalid path"),
-            completer=completion.PathCompleter(),
-            default="."
-        )
+        root_path = inquire_input_path()
 
     # find all paths to iterate on
     root_path = Path(root_path)
@@ -61,6 +56,13 @@ def run(func, root_path=None, b_recursive=False, files_filter="*", b_yield_folde
 
     return paths
 
+def inquire_input_path(default = "."):
+    return prompt(
+            "enter input path:\n",
+            validator=validation.Validator.from_callable(path_validator, error_message="invalid path"),
+            completer=completion.PathCompleter(),
+            default=default
+        )
 
 def inquire_output_path(default):
     while True:
