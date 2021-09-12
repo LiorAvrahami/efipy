@@ -1,6 +1,7 @@
 # efipy
 **\- efipy stands for '*easy file iterator python*'**    
 python based easy file iterator, with recursive option, and file filtering. useful when you need to apply some function to a set of files.
+also could be described as a glob wrapper with UI, for example cna inquires path with file completion capabuilities, show progress bar, and has increased flexabuility.
 
 ## intent:    
 I find this module is useful for automating day to day file iteration tasks, mostly on Windows where bash language is orders of magnitude weaker than python. so instead of writing some half cooked file iterator every time I need to get something done, I thought I would make this.
