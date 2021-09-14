@@ -59,7 +59,7 @@ def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folde
                     func(path)
                 except Exception as e:
                     print(f"Error occurred while processing path \"{path}\". here is the error message:\n")
-                    traceback.format_exc()
+                    print(traceback.format_exc())
             else:
                 func(path)
 
