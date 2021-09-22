@@ -1,6 +1,6 @@
 # efipy
 **\- efipy stands for '*easy file iterator python*'**    
-python based easy file iterator, with recursive option, and file filtering. useful when you need to apply some function to a set of files.
+python based easy file iterator, with recursive option, file filtering, and concurrent (multithreading) capabilities. useful when you need to apply some function to a set of files.
 also, could be described as a glob wrapper with UI, for example can inquire path with file completion capabilities, shows progress bar, and has increased flexibility.
 ## intent:    
 I find this module is useful for automating day to day file iteration tasks, mostly on Windows where bash language is orders of magnitude weaker than python. so instead of writing some half cooked file iterator every time I need to get something done, I thought I would make this.
@@ -27,6 +27,9 @@ Parameters:
 >  - b_recursive - defaults to False. if True, will search recursively in sub-folders. if False will limit search to current dir.   
 >  - files_filter - defaults to "*" (allows any path). a filter to limit search results for files, see "glob" for further details. 
 >  - b_yield_folders - defaults to False. weather to pass paths to folders (not files) to func as well (if you want to iterate on folders as well as files)
+>  - number_of_threads - defaults to 1. the number of threads to be used in order to concurrently run on all files. select 1 in order to loop on files linearly.
+>  - b_skip_errors - defaults to True. if True, then when error occurs while running func, prints it's traceback, and then proceeds to run func on the next path to be iterated.
+>  - errors_log_file - defaults to None. if not None, prints error logs to the file at the path given. file is created & cleared when this function is called.
 >  - b_progress_bar - if true uses tqdm to display progress of file iteration.
 
 returns:
