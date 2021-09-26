@@ -8,6 +8,40 @@ except ImportError:
 
 from prompt_toolkit import validation, completion
 
+def e():
+    """
+    print simple example to screen, to be copied and used
+    """
+    print("\n# example\n"
+          "import os\n"
+          "def f(p):\n"
+          "\tpath = str(p)\n"
+          "\tif path.split(\"_\")[0] == \"0\"\n"
+          "\t\tos.rename(path,\"00\" + \"_\".join(path.split(\"_\")[1:]))\n"
+          "efipy.run(f)\n")
+
+    print("\n# template\n"
+          "import os\n"
+          "def f(p):\n"
+          "\tpath = str(p)\n"
+          "\t#your code here\n"
+          "efipy.run(f)\n")
+
+def run_slow(func,*args,**kwargs):
+    """
+    same signature as efipy.run
+    """
+    i = 0
+    b_skip_wait_for_input = False
+    def step(path):
+        nonlocal i,b_skip_wait_for_input
+        func(path)
+        if not b_skip_wait_for_input:
+            response = input(f"step {i} complete. press enter to continue, write \"run\" to continue without more stops.\n")
+            if response == "run":
+                b_skip_wait_for_input = True
+        i+=1
+    run(step,*args,**kwargs)
 
 def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folders=False, number_of_threads=1 ,b_skip_errors=True,errors_log_file=None, b_progress_bar = True):
     """
@@ -92,10 +126,11 @@ def start_iterating(func,paths_iter,b_yield_folders,b_skip_errors,errors_log_fil
                     func(path)
                 except Exception as e:
                     error_message = f"Error occurred while processing path \"{path}\". here is the error message:\n\n" + traceback.format_exc()
-                    print(error_message)
                     if errors_log_file is not None:
                         with open(errors_log_file, "a+") as f:
-                            f.write(error_message)
+                            f.write(error_message + "\n--------------------------------------------------------\n")
+                    else:
+                        print(error_message)
             else:
                 func(path)
 
