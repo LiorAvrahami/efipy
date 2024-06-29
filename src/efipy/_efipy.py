@@ -1,5 +1,8 @@
 from pathlib import Path
-import os.path, traceback,threading, functools
+import os.path
+import traceback
+import threading
+import functools
 
 try:
     from safer_prompt_toolkit import prompt
@@ -7,6 +10,7 @@ except ImportError:
     from prompt_toolkit import prompt
 
 from prompt_toolkit import validation, completion
+
 
 def e():
     """
@@ -27,23 +31,26 @@ def e():
           "\t#your code here\n"
           "efipy.run(f)\n")
 
-def run_slow(func,*args,**kwargs):
+
+def run_slow(func, *args, **kwargs):
     """
     same signature as efipy.run
     """
     i = 0
     b_skip_wait_for_input = False
+
     def step(path):
-        nonlocal i,b_skip_wait_for_input
+        nonlocal i, b_skip_wait_for_input
         func(path)
         if not b_skip_wait_for_input:
             response = input(f"step {i} complete. press enter to continue, write \"run\" to continue without more stops.\n")
             if response == "run":
                 b_skip_wait_for_input = True
-        i+=1
-    run(step,*args,**kwargs)
+        i += 1
+    run(step, *args, **kwargs)
 
-def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folders=False, number_of_threads=1 ,b_skip_errors=True,errors_log_file=None, b_progress_bar = True):
+
+def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folders=False, number_of_threads=1, b_skip_errors=True, errors_log_file=None, b_progress_bar=True):
     """
     :param func: func - a callable, the function to be executed for each matching file in directories.
                  func receives a single parameter of type pathlib.Path and returns nothing.
@@ -59,7 +66,7 @@ def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folde
     """
 
     if errors_log_file is not None:
-        with open(errors_log_file,"w+") as f:
+        with open(errors_log_file, "w+") as f:
             pass
 
     # if root path not specified, prompt user for path
@@ -69,10 +76,10 @@ def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folde
     # find all paths to iterate on
     root_path = Path(root_path)
     if root_path.is_dir():
-        paths = glob_wrapper(root_path,b_recursive,files_filter)
+        paths = glob_wrapper(root_path, b_recursive, files_filter)
     else:
         # check if root_path meets the files_filter condition.
-        if root_path in glob_wrapper(root_path.parent,False,files_filter):
+        if root_path in glob_wrapper(root_path.parent, False, files_filter):
             paths = [root_path]
         else:
             paths = []
@@ -86,16 +93,16 @@ def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folde
                 paths_iter = tqdm(paths)
             except ImportError:
                 print("can't import tqdm, progress won't be displayed")
-        start_iterating(func,paths_iter,b_yield_folders,b_skip_errors,errors_log_file)
+        start_iterating(func, paths_iter, b_yield_folders, b_skip_errors, errors_log_file)
     if number_of_threads != 1:
         threads = []
         paths_iter = [paths[i::number_of_threads] for i in range(number_of_threads)]
         # do work via several threads
         for i in range(number_of_threads):
             new_thread = threading.Thread(target=start_iterating,
-                                          kwargs={"func":func,"paths_iter":paths_iter[i],
-                                                  "b_yield_folders":b_yield_folders,
-                                                  "b_skip_errors":b_skip_errors,"errors_log_file":errors_log_file})
+                                          kwargs={"func": func, "paths_iter": paths_iter[i],
+                                                  "b_yield_folders": b_yield_folders,
+                                                  "b_skip_errors": b_skip_errors, "errors_log_file": errors_log_file})
             new_thread.start()
             threads.append(new_thread)
         # wait for all threads to finish
@@ -104,19 +111,22 @@ def run(func, root_path=None, files_filter="*", b_recursive=False, b_yield_folde
 
     return paths
 
-def glob_wrapper(root_path,b_recursive,files_filter):
+
+def glob_wrapper(root_path, b_recursive, files_filter):
     if type(files_filter) is str:
         if b_recursive:
             paths = list(root_path.rglob(files_filter))
         else:
             paths = list(root_path.glob(files_filter))
-    elif type(files_filter) in [list,tuple]:
-        paths = functools.reduce(lambda x, y: x + y, [list(glob_wrapper(root_path,b_recursive,single_file_filter)) for single_file_filter in files_filter])
+    elif type(files_filter) in [list, tuple]:
+        paths = functools.reduce(lambda x, y: x + y, [list(glob_wrapper(root_path, b_recursive,
+                                 single_file_filter)) for single_file_filter in files_filter])
     else:
         raise ValueError()
     return paths
 
-def start_iterating(func,paths_iter,b_yield_folders,b_skip_errors,errors_log_file):
+
+def start_iterating(func, paths_iter, b_yield_folders, b_skip_errors, errors_log_file):
     # call func for each path
     for path in paths_iter:
         import time
@@ -125,7 +135,8 @@ def start_iterating(func,paths_iter,b_yield_folders,b_skip_errors,errors_log_fil
                 try:
                     func(path)
                 except Exception as e:
-                    error_message = f"Error occurred while processing path \"{path}\". here is the error message:\n\n" + traceback.format_exc()
+                    error_message = f"Error occurred while processing path \"{path}\". here is the error message:\n\n" + \
+                        traceback.format_exc()
                     if errors_log_file is not None:
                         with open(errors_log_file, "a+") as f:
                             f.write(error_message + "\n--------------------------------------------------------\n")
@@ -134,18 +145,20 @@ def start_iterating(func,paths_iter,b_yield_folders,b_skip_errors,errors_log_fil
             else:
                 func(path)
 
-def inquire_input_path(default = "."):
-    return prompt(
-            "enter input path:\n",
-            validator=validation.Validator.from_callable(path_validator, error_message="invalid path"),
-            completer=completion.PathCompleter(),
-            default=default
-        )
 
-def inquire_output_path(default):
+def inquire_input_path(promet_text="enter input path:\n", default="."):
+    return prompt(
+        promet_text,
+        validator=validation.Validator.from_callable(path_validator, error_message="invalid path"),
+        completer=completion.PathCompleter(),
+        default=default
+    )
+
+
+def inquire_output_path(promet_text="enter output path:\n", default=""):
     while True:
         output_path = prompt(
-            "enter output path:\n",
+            promet_text,
             default=default,
             completer=completion.PathCompleter()
         )
